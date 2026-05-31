@@ -1,13 +1,23 @@
 import type { WorldId } from "@/types/types";
 
 // Literal Tailwind class strings per world so the JIT can see them.
-type WorldTheme = {
+export type WorldTheme = {
 	solid: string;
 	soft: string;
 	text: string;
 	ring: string;
 	gradient: string;
 	shadow: string;
+};
+
+/** Neutral theme for teacher-authored sets (not tied to a world). */
+export const SET_THEME: WorldTheme = {
+	solid: "bg-indigo-500",
+	soft: "bg-indigo-100",
+	text: "text-indigo-600",
+	ring: "border-indigo-200",
+	gradient: "from-indigo-400 to-blue-500",
+	shadow: "shadow-[0_6px_0_#4338ca]",
 };
 
 export const WORLD_THEME: Record<WorldId, WorldTheme> = {

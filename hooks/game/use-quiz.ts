@@ -1,24 +1,14 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import {
-	FAST_BONUS,
-	FAST_BONUS_THRESHOLD,
-	getQuestions,
-} from "@/lib/game-content";
+import { FAST_BONUS, FAST_BONUS_THRESHOLD } from "@/lib/game-content";
 import { playTone } from "@/lib/sound";
-import {
-	checkAnswer,
-	computeStars,
-	difficultyMeta,
-	maxScoreFor,
-} from "@/services/quiz";
+import { checkAnswer, computeStars, difficultyMeta } from "@/services/quiz";
 import { useGameStore } from "@/stores/game.store";
 import type {
 	Question,
 	QuizMode,
-	QuizResultInput,
-	WorldId,
+	QuizRunResult,
 	WrongAnswer,
 } from "@/types/types";
 
@@ -35,15 +25,24 @@ function shuffle<T>(list: readonly T[]): T[] {
 	return arr;
 }
 
-export function useQuiz(
-	worldId: WorldId,
-	mode: QuizMode,
-	onComplete: (result: QuizResultInput) => void,
-) {
+export type UseQuizOptions = {
+	questions: Question[];
+	/** Sum of all question XP — used to turn raw score into a percentage. */
+	maxScore: number;
+	mode: QuizMode;
+	onComplete: (result: QuizRunResult) => void;
+};
+
+export function useQuiz({
+	questions: source,
+	maxScore,
+	mode,
+	onComplete,
+}: UseQuizOptions) {
 	const soundEnabled = useGameStore((s) => s.soundEnabled);
 
 	const [questions] = useState<Question[]>(() =>
-		mode === "boss" ? shuffle(getQuestions(worldId)) : getQuestions(worldId),
+		mode === "boss" ? shuffle(source) : source,
 	);
 	const [index, setIndex] = useState(0);
 	const [lives, setLives] = useState(mode === "boss" ? 2 : 3);
@@ -108,10 +107,9 @@ export function useQuiz(
 	}, [seconds, phase, handleAnswer]);
 
 	const finish = useCallback(() => {
-		const percent = Math.round((rawScore / maxScoreFor(worldId)) * 100);
+		const safeMax = maxScore > 0 ? maxScore : 1;
+		const percent = Math.round((rawScore / safeMax) * 100);
 		onComplete({
-			worldId,
-			mode,
 			scorePercent: percent,
 			xpGained: earnedXp,
 			stars: computeStars(percent),
@@ -124,8 +122,7 @@ export function useQuiz(
 		earnedXp,
 		correctCount,
 		wrong,
-		worldId,
-		mode,
+		maxScore,
 		questions.length,
 		onComplete,
 	]);

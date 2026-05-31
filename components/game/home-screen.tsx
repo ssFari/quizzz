@@ -1,6 +1,14 @@
 "use client";
 
-import { Medal, Play, RotateCcw, Star, Trophy } from "lucide-react";
+import {
+	GraduationCap,
+	Medal,
+	Play,
+	RotateCcw,
+	Star,
+	Ticket,
+	Trophy,
+} from "lucide-react";
 import { motion } from "motion/react";
 import { SoundToggle } from "@/components/game/sound-toggle";
 import type { UseGame } from "@/hooks/game/use-game";
@@ -74,6 +82,20 @@ export function HomeScreen({
 					</span>
 				</button>
 
+				<button
+					type="button"
+					onClick={() => game.navigate("sets")}
+					className="flex items-center gap-3 rounded-2xl bg-indigo-500 p-4 text-left font-bold text-white shadow-[0_4px_0_#4338ca] transition active:translate-y-1 active:shadow-none"
+				>
+					<Ticket className="size-7" />
+					<span className="flex-1">
+						Soal dari Guru
+						<span className="block text-xs font-semibold text-indigo-100">
+							Main pakai kode atau pilih dari daftar
+						</span>
+					</span>
+				</button>
+
 				<div className="grid grid-cols-3 gap-3">
 					<button
 						type="button"
@@ -100,6 +122,13 @@ export function HomeScreen({
 						<span className="text-xs">Peta</span>
 					</button>
 				</div>
+
+				<a
+					href="/guru"
+					className="mt-2 flex items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-slate-200 py-3 text-sm font-bold text-slate-400 transition hover:border-indigo-300 hover:text-indigo-500"
+				>
+					<GraduationCap className="size-5" /> Mode Guru — buat soal
+				</a>
 			</div>
 		</div>
 	);

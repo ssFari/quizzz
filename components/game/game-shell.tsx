@@ -6,8 +6,11 @@ import { HomeScreen } from "@/components/game/home-screen";
 import { LeaderboardScreen } from "@/components/game/leaderboard-screen";
 import { LearnScreen } from "@/components/game/learn-screen";
 import { MapScreen } from "@/components/game/map-screen";
+import { PlaySetScreen } from "@/components/game/play-set-screen";
 import { QuizScreen } from "@/components/game/quiz-screen";
 import { ReviewScreen } from "@/components/game/review-screen";
+import { SetSummaryScreen } from "@/components/game/set-summary-screen";
+import { SetsScreen } from "@/components/game/sets-screen";
 import { SetupScreen } from "@/components/game/setup-screen";
 import { SummaryScreen } from "@/components/game/summary-screen";
 import { WorldScreen } from "@/components/game/world-screen";
@@ -48,6 +51,12 @@ export function GameShell({
 		content = <LeaderboardScreen game={game} />;
 	} else if (screen === "review") {
 		content = <ReviewScreen game={game} />;
+	} else if (screen === "sets") {
+		content = <SetsScreen game={game} />;
+	} else if (screen === "playset") {
+		content = <PlaySetScreen game={game} />;
+	} else if (screen === "setsummary") {
+		content = <SetSummaryScreen game={game} />;
 	} else {
 		content = <HomeScreen player={player} game={game} />;
 	}

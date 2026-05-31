@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
 import { fetchLeaderboard, saveProfile, submitQuiz } from "@/actions/player";
+import { submitSetResult } from "@/actions/set-play";
 import type { ProfileInput } from "@/schemas/game.schema";
 import type {
 	LeaderboardEntry,
@@ -11,6 +12,8 @@ import type {
 	QuizMode,
 	QuizOutcome,
 	QuizResultInput,
+	QuizRunResult,
+	QuizSetWithQuestions,
 	WorldId,
 } from "@/types/types";
 
@@ -23,11 +26,19 @@ export type Screen =
 	| "quiz"
 	| "summary"
 	| "leaderboard"
-	| "review";
+	| "review"
+	| "sets"
+	| "playset"
+	| "setsummary";
 
 export type SummaryData = {
 	result: QuizResultInput;
 	outcome: QuizOutcome | null;
+};
+
+export type SetSummaryData = {
+	result: QuizRunResult;
+	set: QuizSetWithQuestions;
 };
 
 export function useGame(
@@ -41,6 +52,8 @@ export function useGame(
 	const [selectedWorld, setSelectedWorld] = useState<WorldId>(1);
 	const [mode, setMode] = useState<QuizMode>("latihan");
 	const [summary, setSummary] = useState<SummaryData | null>(null);
+	const [activeSet, setActiveSet] = useState<QuizSetWithQuestions | null>(null);
+	const [setResult, setSetResult] = useState<SetSummaryData | null>(null);
 	const qc = useQueryClient();
 
 	const leaderboardQuery = useQuery({
@@ -103,12 +116,41 @@ export function useGame(
 		[qc],
 	);
 
+	const startSet = useCallback((set: QuizSetWithQuestions) => {
+		setActiveSet(set);
+		setScreen("playset");
+	}, []);
+
+	const finishSet = useCallback(
+		async (result: QuizRunResult) => {
+			if (!activeSet) return;
+			setSetResult({ result, set: activeSet });
+			setScreen("setsummary");
+			const res = await submitSetResult({
+				setId: activeSet.id,
+				xpGained: result.xpGained,
+				correctCount: result.correctCount,
+				totalCount: result.totalCount,
+				wrong: result.wrong,
+			});
+			if (res.success) {
+				setPlayer(res.data);
+				qc.invalidateQueries({ queryKey: ["leaderboard"] });
+			} else {
+				toast.error(res.error);
+			}
+		},
+		[activeSet, qc],
+	);
+
 	return {
 		player,
 		screen,
 		selectedWorld,
 		mode,
 		summary,
+		activeSet,
+		setSummary: setResult,
 		leaderboard: leaderboardQuery.data ?? [],
 		isSavingProfile: profileMutation.isPending,
 		saveProfile: (input: ProfileInput) => profileMutation.mutate(input),
@@ -116,6 +158,8 @@ export function useGame(
 		openWorld,
 		startQuiz,
 		finishQuiz,
+		startSet,
+		finishSet,
 	};
 }
 

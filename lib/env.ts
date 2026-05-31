@@ -15,6 +15,10 @@ const schema = z.object({
 	OLLAMA_BASE_URL: z.preprocess(emptyToUndefined, z.url().optional()),
 	OLLAMA_MODEL: z.preprocess(emptyToUndefined, z.string().optional()),
 	OLLAMA_API_KEY: z.preprocess(emptyToUndefined, z.string().optional()),
+
+	// ── Teacher auth (Better Auth). Required for the /guru area to work. ──
+	BETTER_AUTH_SECRET: z.preprocess(emptyToUndefined, z.string().optional()),
+	BETTER_AUTH_URL: z.preprocess(emptyToUndefined, z.url().optional()),
 });
 
 export type Env = z.infer<typeof schema>;

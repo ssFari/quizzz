@@ -37,6 +37,18 @@ export function difficultyMeta(d: Difficulty): {
 	}
 }
 
+/** XP awarded per question, derived from difficulty (matches the built-in bank). */
+export function xpForDifficulty(d: Difficulty): number {
+	switch (d) {
+		case "mudah":
+			return 10;
+		case "sedang":
+			return 20;
+		case "sulit":
+			return 30;
+	}
+}
+
 export function maxScoreFor(worldId: WorldId): number {
 	return QUESTION_BANK[worldId].reduce((sum, q) => sum + q.xp, 0);
 }

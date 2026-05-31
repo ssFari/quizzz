@@ -77,9 +77,8 @@ export type WrongAnswer = {
 	explanation: string;
 };
 
-export type QuizResultInput = {
-	worldId: WorldId;
-	mode: QuizMode;
+/** Outcome of a finished quiz run, independent of what was played. */
+export type QuizRunResult = {
 	/** 0..100 percentage of max score. */
 	scorePercent: number;
 	xpGained: number;
@@ -89,10 +88,31 @@ export type QuizResultInput = {
 	wrong: WrongAnswer[];
 };
 
+export type QuizResultInput = QuizRunResult & {
+	worldId: WorldId;
+	mode: QuizMode;
+};
+
 export type QuizOutcome = {
 	player: Player;
 	unlockedNewWorld: boolean;
 	newBadges: BadgeId[];
+};
+
+// ─── Teacher-authored quiz sets ────────────────────────
+export type QuizSetSummary = {
+	id: string;
+	code: string;
+	title: string;
+	description: string;
+	emoji: string;
+	authorName: string;
+	questionCount: number;
+	isPublic: boolean;
+};
+
+export type QuizSetWithQuestions = QuizSetSummary & {
+	questions: Question[];
 };
 
 // ─── AI tutor ──────────────────────────────────────────
